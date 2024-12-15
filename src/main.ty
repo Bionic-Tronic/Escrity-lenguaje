@@ -1,34 +1,9 @@
-a = 50
-b = 51
-c = a + b
-print c
-text "Probando funciones"
-func sum (n1,n2) then
-    text "Dentro de la funcion de suma"
-    return n1+n2
+text "Ingrese un numero: "
+num = get_int
+function sqrt (n) do
+   return n * n
 end
-func res (n1,n2) then
-    text "Dentro de la funcion de resta"
-    return n1-n2
+if num < 1 then
+   exit
 end
-func mul (n1,n2) then
-    text "Dentro de la funcion de multiplicacion"
-    return n1*n2
-end
-func div (n1,n2) then
-    text "Dentro de la funcion de division"
-    return n1/n2
-end
-
-text sum(5,5)
-text res(10,5)
-text mul(2,2)
-text div(18,2)
-
-text "Probando condicionales"
-edad = 13
-if edad >= 18 then
-   text "Eres mayor de edad"
-else
-   text "Eres menor de edad"
-end
+text sqrt(num)
