@@ -1,9 +1,38 @@
 text "Ingrese un numero: "
 num = get_int
-function sqrt (n) do
+func sqrt (n) do
    return n * n
 end
 if num < 1 then
    exit
 end
-text sqrt(num)
+text "resultado: "
+resolver sqrt(num + PI)//De momento no se soporta de foma correcta los números flotantes
+puts
+Object Carro implements//Object o Create. declare o implements
+   ruedas : 4,
+   color : "Azul",
+   precio : 35000,
+   descuento : 12,
+   comprar : func _anonima_ (precio) then
+        text "Se ha comprado el coche por: "
+        resolver precio
+        puts
+   end
+   vender : func _anonima_ (cantidad) then
+        text "Se ha vendido el coche por: "
+        resolver sqrt(cantidad)
+        puts
+   end
+end
+Carro.comprar(Carro.precio)
+text "¿Vender el coche?\n"
+text "1.Si 2.No\n"
+text ">> "
+result = get_int
+//Los condicionales estan rotos
+if result == 1 then
+   Carro.vender(Carro.precio)
+else
+   text "No se vendio el coche"
+end
