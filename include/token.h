@@ -16,19 +16,51 @@ void add_token(const char* type, const char* value) {
     token_count++;
 }
 
+char* unescape_string(const char* input) {
+    static char buffer[MAX_TOKEN_LENGTH];
+    int i, j;
+    for (i = 0, j = 0; input[i] != '\0'; i++, j++) {
+        if (input[i] == '\\') {
+            i++;
+            switch (input[i]) {
+                case 'n': buffer[j] = '\n'; break;
+                case 't': buffer[j] = '\t'; break;
+                case 'r': buffer[j] = '\r'; break;
+                case '\\': buffer[j] = '\\'; break;
+                case '"': buffer[j] = '"'; break;
+                default: buffer[j] = input[i];
+            }
+        } else {
+            buffer[j] = input[i];
+        }
+    }
+    buffer[j] = '\0';
+    return buffer;
+}
+
 void tokenize(const char* code) {
     char buffer[MAX_TOKEN_LENGTH];
     int buffer_pos = 0;
-    
+    bool in_comment = false;
     for (int i = 0; code[i] != '\0'; i++) {
+        if (in_comment) {
+            if (code[i] == '\n') {
+                in_comment = false;
+            }
+            continue;
+        }
+        if (code[i] == '/' && code[i+1] == '/') {
+            in_comment = true;
+            i++;
+            continue;
+        }
         if (isalpha(code[i]) || code[i] == '_') {
             buffer[buffer_pos++] = code[i];
             while (isalnum(code[i+1]) || code[i+1] == '_') {
                 buffer[buffer_pos++] = code[++i];
             }
             buffer[buffer_pos] = '\0';
-            
-            if (strcmp(buffer, "text") == 0 || strcmp(buffer, "print") == 0) {
+            if (strcmp(buffer, "text") == 0) {
                 add_token("PRINT", buffer);
             } else if (strcmp(buffer, "resolver") == 0) {
                 add_token("RESOLVER", buffer);
@@ -60,31 +92,62 @@ void tokenize(const char* code) {
             	add_token("GET_STR", buffer);
             } else if (strcmp(buffer,"random") == 0){
             	add_token("RANDOM", buffer);
+            } else if (strcmp(buffer,"PI") == 0){
+            	add_token("PI", buffer);
+            } else if (strcmp(buffer,"exit") == 0){
+            	add_token("EXIT", buffer);
+            } else if (strcmp(buffer,"puts") == 0){
+            	add_token("PUTS", buffer);
+            } else if (strcmp(buffer,"getchar") == 0){
+            	add_token("GETCHAR", buffer);
+            } else if (strcmp(buffer, "Object") == 0 || strcmp(buffer, "Create") == 0) {
+                add_token("STRUCT", buffer);
+            } else if (strcmp(buffer, "declare") == 0 || strcmp(buffer, "implements") == 0) {
+                add_token("DECLARE", buffer);
+            } else if (strcmp(buffer, "array") == 0) {
+                add_token("ARRAY", buffer);
             } else {
                 add_token("IDENTIFIER", buffer);
             }
             buffer_pos = 0;
-        } else if (isdigit(code[i])) {
+        } else if (isdigit(code[i]) || (code[i] == '.' && isdigit(code[i+1]))) {
             buffer[buffer_pos++] = code[i];
-            while (isdigit(code[i+1])) {
+            while (isdigit(code[i+1]) || code[i+1] == '.') {
                 buffer[buffer_pos++] = code[++i];
             }
             buffer[buffer_pos] = '\0';
-            add_token("NUMBER", buffer);
+            add_token(strchr(buffer, '.') ? "FLOAT" : "NUMBER", buffer);
             buffer_pos = 0;
         } else if (code[i] == '"') {
             buffer[buffer_pos++] = code[i];
             i++;
-            while (code[i] != '"' && code[i] != '\0') {
+            while (code[i] != '"' || (code[i] == '"' && code[i-1] == '\\')) {
+                if (code[i] == '\0') {
+                    printf("Error: Unterminated string\n");
+                    exit(1);
+                }
                 buffer[buffer_pos++] = code[i++];
             }
-            if (code[i] == '"') {
+            buffer[buffer_pos++] = code[i];
+            buffer[buffer_pos] = '\0';
+            add_token("STRING", unescape_string(buffer));
+            buffer_pos = 0;
+        } else if (code[i] == '\'') {
+            buffer[buffer_pos++] = code[i];
+            i++;
+            if (code[i] == '\\') {
+                buffer[buffer_pos++] = code[i++];
+            }
+            if (code[i] != '\0') {
+                buffer[buffer_pos++] = code[i++];
+            }
+            if (code[i] == '\'') {
                 buffer[buffer_pos++] = code[i];
             }
             buffer[buffer_pos] = '\0';
-            add_token("STRING", buffer);
+            add_token("CHAR", unescape_string(buffer));
             buffer_pos = 0;
-        } else if (strchr("+-*/=(),<>", code[i]) != NULL) {
+        } else if (strchr("+-*/=(),<>:.[]{}", code[i]) != NULL) {
             buffer[0] = code[i];
             buffer[1] = '\0';
             if (code[i] == '=' && code[i+1] == '=') {
@@ -97,16 +160,16 @@ void tokenize(const char* code) {
                 i++;
             }
             add_token(code[i] == '(' || code[i] == ')' ? "PAREN" :
-                      code[i] == ',' ? "COMMA" : "OPERATOR", buffer);
-        } else if (code[i] == ';') {
-            add_token("SEMICOLON", ";");
+                      code[i] == '[' || code[i] == ']' ? "BRACKET" :
+                      code[i] == '{' || code[i] == '}' ? "BRACE" :
+                      code[i] == ',' ? "COMMA" :
+                      code[i] == ':' ? "COLON" :
+                      code[i] == '.' ? "DOT" : "OPERATOR", buffer);
         } else if (code[i] == ' ' || code[i] == '\t' || code[i] == '\n') {
-            // Ignore whitespace
         } else {
             printf("Error: Unexpected character '%c'\n", code[i]);
             exit(1);
         }
     }
 }
-
 #endif
