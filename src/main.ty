@@ -1,38 +1,19 @@
-text "Ingrese un numero: "
-num = get_int
-func sqrt (n) do
-   return n * n
+//Declaración del enum
+enum a then
+   lunes,
+   martes,
 end
-if num < 1 then
-   exit
-end
-text "resultado: "
-resolver sqrt(num + PI)//De momento no se soporta de foma correcta los números flotantes
-puts
-Object Carro implements//Object o Create. declare o implements
-   ruedas : 4,
-   color : "Azul",
-   precio : 35000,
-   descuento : 12,
-   comprar : func _anonima_ (precio) then
-        text "Se ha comprado el coche por: "
-        resolver precio
-        puts
-   end
-   vender : func _anonima_ (cantidad) then
-        text "Se ha vendido el coche por: "
-        resolver sqrt(cantidad)
-        puts
-   end
-end
-Carro.comprar(Carro.precio)
-text "¿Vender el coche?\n"
-text "1.Si 2.No\n"
-text ">> "
-result = get_int
-//Los condicionales estan rotos
-if result == 1 then
-   Carro.vender(Carro.precio)
-else
-   text "No se vendio el coche"
+
+//uso del enum
+b = a.lunes
+//Uso del where
+where b then
+   case a.lunes:
+      text "Es lunes\n"
+   stop
+   case a.martes:
+      text "Es martes\n"
+   stop
+   default:
+      text "No es ni lunes ni martes"
 end
