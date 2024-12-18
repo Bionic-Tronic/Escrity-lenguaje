@@ -76,9 +76,10 @@ void interpret_for_loop() {
                 exit(1);
             }
             current_token++;
-            /*while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0)
+            while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0){
+                //Aqui
                 evaluate_expression();
-             */
+            }
             while (current_token < token_count){
                 evaluate_expression();
                 if( strcmp(tokens[current_token].type, "END") == 0){
@@ -136,8 +137,9 @@ void interpret_while_loop() {
             exit(1);
         }
         current_token++;
-        while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0)
+        while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
             evaluate_expression();
+        }
         if (current_token >= token_count || strcmp(tokens[current_token].type, "END") != 0) {
             printf("Error: Expected 'end' at the end of while loop\n");
             exit(1);
@@ -153,12 +155,107 @@ void interpret_while_loop() {
     current_token++;
 }
 
+void interpret_where_statement() {
+    current_token++;
+    if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0) {
+        printf("Error: Expected variable name after 'where'\n");
+        exit(1);
+    }
+    char var_name[MAX_TOKEN_LENGTH];
+    strcpy(var_name, tokens[current_token].value);
+    current_token++;
+    if (current_token >= token_count || strcmp(tokens[current_token].type, "THEN") != 0) {
+        printf("Error: Expected 'then' after variable name in where statement\n");
+        exit(1);
+    }
+    current_token++;
+    Variable* var = get_variable(var_name);
+    if (var == NULL) {
+        printf("Error: Variable '%s' not defined\n", var_name);
+        exit(1);
+    }
+    int value;
+    if (strcmp(var->type, "int") == 0) {
+        value = var->value.int_value;
+    } else if (strcmp(var->type, "float") == 0) {
+        value = (int)(var->value.float_value * 1000);
+    } else if (strcmp(var->type, "char") == 0) {
+        value = var->value.char_value;
+    } else if (strcmp(var->type, "enum") == 0) {
+        value = var->value.enum_value;
+    } else {
+        printf("Error: Cannot use variable '%s' of type '%s' in where statement\n", var_name, var->type);
+        exit(1);
+    }
+    bool case_matched = false;
+    while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
+        if (strcmp(tokens[current_token].type, "CASE") == 0) {
+            current_token++;
+            int case_value = evaluate_expression();
+            if (current_token >= token_count || strcmp(tokens[current_token].type, "COLON") != 0) {
+                printf("Error: Expected ':' after case value\n");
+                exit(1);
+            }
+            current_token++;
+            if (value == case_value && !case_matched) {
+                case_matched = true;
+                while (current_token < token_count && strcmp(tokens[current_token].type, "STOP") != 0 &&
+                       strcmp(tokens[current_token].type, "CASE") != 0 && strcmp(tokens[current_token].type, "DEFAULT") != 0 &&
+                       strcmp(tokens[current_token].type, "END") != 0) {
+                    evaluate_expression();
+                }
+            } else {
+                while (current_token < token_count && strcmp(tokens[current_token].type, "STOP") != 0 &&
+                       strcmp(tokens[current_token].type, "CASE") != 0 && strcmp(tokens[current_token].type, "DEFAULT") != 0 &&
+                       strcmp(tokens[current_token].type, "END") != 0) {
+                    current_token++;
+                }
+            }
+
+            if (current_token < token_count && strcmp(tokens[current_token].type, "STOP") == 0) {
+                current_token++;
+            }
+        } else if (strcmp(tokens[current_token].type, "DEFAULT") == 0) {
+            current_token++;
+            
+            if (current_token >= token_count || strcmp(tokens[current_token].type, "COLON") != 0) {
+                printf("Error: Expected ':' after default\n");
+                exit(1);
+            }
+            current_token++;
+
+            if (!case_matched) {
+                while (current_token < token_count && strcmp(tokens[current_token].type, "STOP") != 0 &&
+                       strcmp(tokens[current_token].type, "END") != 0) {
+                    evaluate_expression();
+                }
+            } else {
+                while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
+                    current_token++;
+                }
+            }
+            if (current_token < token_count && strcmp(tokens[current_token].type, "STOP") == 0) {
+                current_token++;
+            }
+        } else {
+            printf("Error: Unexpected token '%s' in where statement\n", tokens[current_token].type);
+            exit(1);
+        }
+    }
+
+    if (current_token >= token_count || strcmp(tokens[current_token].type, "END") != 0) {
+        printf("Error: Expected 'end' at the end of where statement\n");
+        exit(1);
+    }
+    current_token++; // Skip 'end'
+}
+
 void interpret() {
     while (current_token < token_count) {
         if (strcmp(tokens[current_token].type, "FUNC") == 0) {
             current_token++;
             define_function();
-        } else if (strcmp(tokens[current_token].type, "IF") == 0) {
+        } else if (strcmp(tokens[current_token].type, "IF") == 0 || strcmp(tokens[current_token].type, "ELSE") == 0) {
             interpret_if_statement();
         } else if (strcmp(tokens[current_token].type, "FOR") == 0) {
             interpret_for_loop();
@@ -167,6 +264,11 @@ void interpret() {
         } else if (strcmp(tokens[current_token].type, "STRUCT") == 0) {
             current_token++;
             define_struct();
+        } else if (strcmp(tokens[current_token].type, "ENUM") == 0) {
+            current_token++;
+            define_enum();
+        } else if (strcmp(tokens[current_token].type, "WHERE") == 0) {
+            interpret_where_statement();
         } else {
             evaluate_expression();
         }

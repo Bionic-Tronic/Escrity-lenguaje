@@ -15,6 +15,7 @@ typedef struct {
         Function* func_value;
         int* array_value;
         int array_size;
+        int enum_value;
     } value;
 } Variable;
 
