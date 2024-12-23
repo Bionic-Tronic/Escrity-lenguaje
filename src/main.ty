@@ -1,19 +1,27 @@
-//Declaración del enum
-enum a then
-   lunes,
-   martes,
+//Codigo de prueba del Array
+//Se declara el Arreglo
+Array teclas include
+   a : 'a',
+   s : 's',
+   d : 'd',
+   w : 'w',
 end
-
-//uso del enum
-b = a.lunes
-//Uso del where
-where b then
-   case a.lunes:
-      text "Es lunes\n"
+//Se obtiene la tecla pulsada
+tecla = getchar
+//Se verifica con la estructura where y el arreglo declarado si es asdw
+where tecla then
+   when teclas["a"]:
+      text "Se pulso la a\n"
    stop
-   case a.martes:
-      text "Es martes\n"
+   case teclas["s"]:
+      text "Se pulso la s\n"
+   stop
+   when teclas["d"]:
+      text "Se pulso la d\n"
+   stop
+   when teclas["w"]:
+      text "Se pulso la w\n"
    stop
    default:
-      text "No es ni lunes ni martes"
+      text "Tecla desconocida\n"
 end
