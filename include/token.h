@@ -104,12 +104,14 @@ void tokenize(const char* code) {
                 add_token("STRUCT", buffer);
             } else if (strcmp(buffer, "declare") == 0 || strcmp(buffer, "implements") == 0) {
                 add_token("DECLARE", buffer);
-            } else if (strcmp(buffer, "array") == 0) {
+            } else if (strcmp(buffer, "array") == 0 || strcmp(buffer, "Array") == 0) {
                 add_token("ARRAY", buffer);
-            } else if (strcmp(buffer, "case") == 0) {
+            } else if (strcmp(buffer, "case") == 0 || strcmp(buffer, "when") == 0) {
                 add_token("CASE", buffer);
             } else if (strcmp(buffer, "stop") == 0) {
                 add_token("STOP", buffer);
+            } else if (strcmp(buffer, "include") == 0) {
+                add_token("INCLUDE", buffer);
             } else if (strcmp(buffer, "default") == 0) {
                 add_token("DEFAULT", buffer);
             } else if (strcmp(buffer, "enum") == 0) {

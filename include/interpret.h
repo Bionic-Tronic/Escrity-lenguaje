@@ -269,6 +269,9 @@ void interpret() {
             define_enum();
         } else if (strcmp(tokens[current_token].type, "WHERE") == 0) {
             interpret_where_statement();
+        } else if (strcmp(tokens[current_token].type, "ARRAY") == 0) {
+            current_token++;
+            define_array();
         } else {
             evaluate_expression();
         }

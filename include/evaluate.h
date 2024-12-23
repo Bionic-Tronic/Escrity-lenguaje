@@ -11,65 +11,89 @@ void removeQuotes(const char *source, char *dest) {
     *dest = '\0';
 }
 
-int evaluate_array_access(Variable* var) {
-    if (strcmp(var->type, "array") != 0) {
-        printf("Error: Variable '%s' is not an array\n", var->name);
-        exit(1);
+int evaluate_array_access(Array* arr, const char* key) {
+    char clean_key[MAX_TOKEN_LENGTH];
+    strncpy(clean_key, key + 1, strlen(key) - 2);
+    clean_key[strlen(key) - 2] = '\0';
+
+    for (int i = 0; i < arr->member_count; i++) {
+        if (strcmp(arr->members[i].name, clean_key) == 0) {
+            if (strcmp(arr->members[i].type, "int") == 0) {
+                return arr->members[i].value.int_value;
+            } else if (strcmp(arr->members[i].type, "float") == 0) {
+                return (int)(arr->members[i].value.float_value * 1000);
+            } else if (strcmp(arr->members[i].type, "char") == 0) {
+                return arr->members[i].value.char_value;
+            } else if (strcmp(arr->members[i].type, "enum") == 0) {
+                return arr->members[i].value.enum_value;
+            } else if (strcmp(arr->members[i].type, "array") == 0) {
+                return 0;
+            } else if (strcmp(arr->members[i].type, "string") == 0) {
+                set_variable("_tmp_str", "string", arr->members[i].value.string_value);
+                return 0;
+            } else {
+                printf("Error: Cannot evaluate array member '%s' of type '%s'\n", clean_key, arr->members[i].type);
+                exit(1);
+            }
+        }
     }
-    if (current_token >= token_count || strcmp(tokens[current_token].type, "BRACKET") != 0 || strcmp(tokens[current_token].value, "[") != 0) {
-        printf("Error: Expected '[' for array access\n");
-        exit(1);
-    }
-    current_token++;
-    int index = evaluate_expression();
-    if (current_token >= token_count || strcmp(tokens[current_token].type, "BRACKET") != 0 || strcmp(tokens[current_token].value, "]") != 0) {
-        printf("Error: Expected ']' after array index\n");
-        exit(1);
-    }
-    current_token++;
-    if (index < 0 || index >= var->value.array_size) {
-        printf("Error: Array index out of bounds\n");
-        exit(1);
-    }
-    return var->value.array_value[index];
+    printf("Error: Array key '%s' not found\n", clean_key);
+    exit(1);
 }
+
 int evaluate_factor() {
     Token token = tokens[current_token];
     current_token++;
-    
     if (strcmp(token.type, "NUMBER") == 0) {
         return atoi(token.value);
     } else if (strcmp(token.type, "FLOAT") == 0) {
-        return (int)(atof(token.value) * 1000); // Convert to int (cents)
+        return (int)(atof(token.value) * 1000);
     } else if (strcmp(token.type, "IDENTIFIER") == 0) {
         if (current_token < token_count && strcmp(tokens[current_token].type, "PAREN") == 0 && strcmp(tokens[current_token].value, "(") == 0) {
-            // Function call
             Function* func = get_function(token.value);
             if (func == NULL) {
                 printf("Error: Function '%s' not defined\n", token.value);
                 exit(1);
             }
-            current_token++; // Skip '('
+            current_token++;
             int args[MAX_PARAMS];
             int arg_count = 0;
             while (current_token < token_count && strcmp(tokens[current_token].type, "PAREN") != 0) {
                 args[arg_count++] = evaluate_expression();
                 if (current_token < token_count && strcmp(tokens[current_token].type, "COMMA") == 0) {
-                    current_token++; // Skip ','
+                    current_token++;
                 }
             }
             if (current_token >= token_count || strcmp(tokens[current_token].value, ")") != 0) {
                 printf("Error: Expected ')' after function arguments\n");
                 exit(1);
             }
-            current_token++; // Skip ')'
+            current_token++;
             return call_function(func, args, arg_count);
+        } else if (current_token < token_count && strcmp(tokens[current_token].type, "BRACKET") == 0 && strcmp(tokens[current_token].value, "[") == 0) {
+            Array* arr = get_array(token.value);
+            if (arr == NULL) {
+                printf("Error: Array '%s' not defined\n", token.value);
+                exit(1);
+            }
+            current_token++;
+            if (current_token >= token_count || (strcmp(tokens[current_token].type, "STRING") != 0 && strcmp(tokens[current_token].type, "IDENTIFIER") != 0)) {
+                printf("Error: Expected string key or identifier for array access\n");
+                exit(1);
+            }
+            char* key = tokens[current_token].value;
+            current_token++;
+            if (current_token >= token_count || strcmp(tokens[current_token].type, "BRACKET") != 0 || strcmp(tokens[current_token].value, "]") != 0) {
+                printf("Error: Expected ']' after array key\n");
+                exit(1);
+            }
+            current_token++;
+            return evaluate_array_access(arr, key);
         } else if (current_token < token_count && strcmp(tokens[current_token].type, "DOT") == 0) {
-            // Struct member access or enum value
             Struct* s = get_struct(token.value);
             Enum* e = get_enum(token.value);
             if (s != NULL) {
-                current_token++; // Skip '.'
+                current_token++;
                 if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0) {
                     printf("Error: Expected member name after '.'\n");
                     exit(1);
@@ -81,27 +105,26 @@ int evaluate_factor() {
                         if (strcmp(s->members[i].type, "int") == 0) {
                             return s->members[i].value.int_value;
                         } else if (strcmp(s->members[i].type, "float") == 0) {
-                            return (int)(s->members[i].value.float_value * 1000); // Convert to int (cents)
+                            return (int)(s->members[i].value.float_value * 1000);
                         } else if (strcmp(s->members[i].type, "char") == 0) {
                             return s->members[i].value.char_value;
                         } else if (strcmp(s->members[i].type, "function") == 0) {
-                            // Call the function
                             Function* func = s->members[i].value.func_value;
                             int args[MAX_PARAMS];
                             int arg_count = 0;
                             if (current_token < token_count && strcmp(tokens[current_token].type, "PAREN") == 0 && strcmp(tokens[current_token].value, "(") == 0) {
-                                current_token++; // Skip '('
+                                current_token++;
                                 while (current_token < token_count && strcmp(tokens[current_token].type, "PAREN") != 0) {
                                     args[arg_count++] = evaluate_expression();
                                     if (current_token < token_count && strcmp(tokens[current_token].type, "COMMA") == 0) {
-                                        current_token++; // Skip ','
+                                        current_token++;
                                     }
                                 }
                                 if (current_token >= token_count || strcmp(tokens[current_token].value, ")") != 0) {
                                     printf("Error: Expected ')' after function arguments\n");
                                     exit(1);
                                 }
-                                current_token++; // Skip ')'
+                                current_token++;
                             }
                             return call_function(func, args, arg_count);
                         } else {
@@ -113,7 +136,7 @@ int evaluate_factor() {
                 printf("Error: Member '%s' not found in struct '%s'\n", member_name, token.value);
                 exit(1);
             } else if (e != NULL) {
-                current_token++; // Skip '.'
+                current_token++;
                 if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0) {
                     printf("Error: Expected enum value after '.'\n");
                     exit(1);
@@ -177,12 +200,9 @@ int evaluate_factor() {
     } else if (strcmp(token.type, "PUTS") == 0){
     	printf("\n");
     	return 0;
-    } else if (strcmp(token.type, "GETCHAR") == 0){
-    	char x = getch();
-    	return x;
-    } else if (strcmp(var->type, "array") == 0) {
+    } /*else if (strcmp(var->type, "array") == 0) {
                 return evaluate_array_access(var);
-            } else if (strcmp(var->type, "enum") == 0) {
+            }*/ else if (strcmp(var->type, "enum") == 0) {
                 return var->value.enum_value;
             } else {
                 printf("Error: Cannot evaluate variable '%s' of type '%s'\n", token.value, var->type);
@@ -200,6 +220,9 @@ int evaluate_factor() {
             printf("%d", result);
         }
         return result;
+    } else if (strcmp(token.type, "GETCHAR") == 0){
+    	char x = getch();
+    	return x;
     } else if (strcmp(token.type, "BRACKET") == 0 && strcmp(token.value, "[") == 0) {
         int array[MAX_ARRAY_SIZE];
         int size = 0;

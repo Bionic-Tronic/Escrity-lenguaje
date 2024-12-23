@@ -2,6 +2,7 @@
 #define VARIABLE_H
 
 typedef struct Function Function;
+typedef struct Array Array;
 
 typedef struct {
     char name[MAX_TOKEN_LENGTH];
@@ -53,7 +54,7 @@ void set_variable(const char* name, const char* type, void* value) {
     } else if (strcmp(type, "function") == 0) {
         var->value.func_value = (Function*)value;
     } else if (strcmp(type, "array") == 0) {
-        var->value.array_value = (int*)value;
+        var->value.array_value = (Array*)value;
     }
 }
 
