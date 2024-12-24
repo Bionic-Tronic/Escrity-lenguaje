@@ -3,6 +3,8 @@
 
 typedef struct Function Function;
 typedef struct Array Array;
+typedef char * string;
+typedef const char * String;
 
 typedef struct {
     char name[MAX_TOKEN_LENGTH];
@@ -17,6 +19,7 @@ typedef struct {
         int* array_value;
         int array_size;
         int enum_value;
+        FILE * fp;
     } value;
 } Variable;
 
@@ -30,6 +33,42 @@ Variable* get_variable(const char* name) {
         }
     }
     return NULL;
+}
+
+int get_type_variable (const char * name){
+	for (int i = 0; i < variable_count; i++) {
+        if (strcmp(variables[i].name, name) == 0) {
+            if(strcmp(variables[i].type,"int") == 0)
+            	return 105;
+            else if(strcmp(variables[i].type,"float") == 0)
+                return 102;
+            else if(strcmp(variables[i].type,"string") == 0)
+                return 115;
+            else if(strcmp(variables[i].type,"char") == 0)
+                return 99;
+            else if(strcmp(variables[i].type,"function") == 0)
+                return 219;
+            else if(strcmp(variables[i].type,"array") == 0)
+                return 97;
+        }
+    }
+    return NULL;
+}
+
+int buscar_palabra (String word, String texto){
+    string text_copy = strdup(word);
+    if (text_copy == NULL)
+        return -1;
+    string line = strtok(text_copy, "\n");
+    while (line != NULL){
+        if (strstr(line, texto) != NULL){
+            free(text_copy);
+            return 1;
+        }
+        line = strtok(NULL, "\n");
+    }
+    free(text_copy);
+    return -1;
 }
 
 void set_variable(const char* name, const char* type, void* value) {
@@ -55,6 +94,8 @@ void set_variable(const char* name, const char* type, void* value) {
         var->value.func_value = (Function*)value;
     } else if (strcmp(type, "array") == 0) {
         var->value.array_value = (Array*)value;
+    } else if (strcmp(type, "file") == 0) {
+        var->value.array_value = (FILE*)value;
     }
 }
 

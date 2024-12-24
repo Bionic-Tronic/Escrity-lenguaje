@@ -77,7 +77,6 @@ void interpret_for_loop() {
             }
             current_token++;
             while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0){
-                //Aqui
                 evaluate_expression();
             }
             while (current_token < token_count){
@@ -203,6 +202,7 @@ void interpret_where_statement() {
                        strcmp(tokens[current_token].type, "CASE") != 0 && strcmp(tokens[current_token].type, "DEFAULT") != 0 &&
                        strcmp(tokens[current_token].type, "END") != 0) {
                     evaluate_expression();
+                    interpret_if_statement();
                 }
             } else {
                 while (current_token < token_count && strcmp(tokens[current_token].type, "STOP") != 0 &&
@@ -228,6 +228,7 @@ void interpret_where_statement() {
                 while (current_token < token_count && strcmp(tokens[current_token].type, "STOP") != 0 &&
                        strcmp(tokens[current_token].type, "END") != 0) {
                     evaluate_expression();
+                    interpret_if_statement();
                 }
             } else {
                 while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
@@ -247,7 +248,7 @@ void interpret_where_statement() {
         printf("Error: Expected 'end' at the end of where statement\n");
         exit(1);
     }
-    current_token++; // Skip 'end'
+    current_token++;
 }
 
 void interpret() {

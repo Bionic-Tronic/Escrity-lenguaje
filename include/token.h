@@ -118,6 +118,18 @@ void tokenize(const char* code) {
                 add_token("ENUM", buffer);
             } else if (strcmp(buffer, "where") == 0) {
             	add_token("WHERE", buffer);
+            } else if (strcmp(buffer, "gettype") == 0) {
+            	add_token("GETTYPE", buffer);
+            } else if (strcmp(buffer, "open_file") == 0) {
+            	add_token("OPEN_FILE", buffer);
+            } else if (strcmp(buffer, "write_file") == 0) {
+            	add_token("WRITE_FILE", buffer);
+            } else if (strcmp(buffer, "close_file") == 0) {
+            	add_token("CLOSE_FILE", buffer);
+            } else if (strcmp(buffer, "memory") == 0) {
+            	add_token("MEMORY", buffer);
+            } else if (strcmp(buffer, "prepare") == 0) {
+            	add_token("PREPARE", buffer);
             } else {
                 add_token("IDENTIFIER", buffer);
             }
