@@ -273,8 +273,9 @@ int evaluate_factor() {
         }
         return result;
     } else if (strcmp(token.type, "GETCHAR") == 0){
-    	char x = getch();
-    	return x;
+    	//char x = getch();
+    	//return x;
+    	return 97;
     } else if (strcmp(token.type, "PUTS") == 0){
     	printf("\n");
     	return 0;

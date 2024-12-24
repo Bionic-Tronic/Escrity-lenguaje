@@ -7,7 +7,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <time.h>
-#include <conio.h>
+//#include <conio.h>
 
 #define MAX_TOKEN_LENGTH 1000
 #define MAX_TOKENS 1000
