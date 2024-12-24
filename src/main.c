@@ -5,19 +5,20 @@
 #include "../include/object.h"
 #include "../include/enum.h"
 #include "../include/Array.h"
-#include "../include/evaluate.h"
 #include "../include/interpret.h"
+#include "../include/evaluate.h"
+
+#define MAX_FILE 1024
 
 int main(){
 	FILE *fp = fopen("main.ty", "r");
 	if (fp == NULL){
-		perror("");
+		perror("Error");
 		return -1;
 	}
-	char code[1024];
-	fread(code, sizeof(char), 1024, fp);
+	char code[MAX_FILE];
+	fread(code, sizeof(char), MAX_FILE, fp);
 	fclose(fp);
-	system("color 8");
 	tokenize(code);
 	interpret();
 	return 0;
