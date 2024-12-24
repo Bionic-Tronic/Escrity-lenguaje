@@ -42,72 +42,6 @@ int evaluate_array_access(Array* arr, const char* key) {
     printf("Error: Array key '%s' not found\n", clean_key);
     exit(1);
 }
-int evaluate_term() {
-    int left = evaluate_factor();
-    while (current_token < token_count && 
-           strcmp(tokens[current_token].type, "OPERATOR") == 0 && 
-           (tokens[current_token].value[0] == '*' || tokens[current_token].value[0] == '/')) {
-        char op = tokens[current_token].value[0];
-        current_token++;
-        int right = evaluate_factor();
-        if (op == '*')
-            left *= right;
-        else {
-            if (right == 0) {
-                printf("Error: Division by zero\n");
-                exit(1);
-            }
-            left /= right;
-        }
-    }
-    return left;
-}
-
-int evaluate_expression() {
-    if (current_token + 2 < token_count &&
-        strcmp(tokens[current_token].type, "IDENTIFIER") == 0 &&
-        strcmp(tokens[current_token + 1].type, "OPERATOR") == 0 &&
-        tokens[current_token + 1].value[0] == '=') {
-        char var_name[MAX_TOKEN_LENGTH];
-        strcpy(var_name, tokens[current_token].value);
-        current_token += 2;
-        int value = evaluate_expression();
-        set_variable(var_name, "int", &value);
-        return value;
-    }
-
-    int left = evaluate_term();
-    
-    while (current_token < token_count && 
-           strcmp(tokens[current_token].type, "OPERATOR") == 0 && 
-           (tokens[current_token].value[0] == '+' || tokens[current_token].value[0] == '-' ||
-            strcmp(tokens[current_token].value, "==") == 0 || strcmp(tokens[current_token].value, "<") == 0 ||
-            strcmp(tokens[current_token].value, ">") == 0 || strcmp(tokens[current_token].value, "<=") == 0 ||
-            strcmp(tokens[current_token].value, ">=") == 0)) {
-        char op[3];
-        strcpy(op, tokens[current_token].value);
-        current_token++;
-        int right = evaluate_term();
-        if (strcmp(op, "+") == 0) {
-            left += right;
-        } else if (strcmp(op, "-") == 0) {
-            left -= right;
-        } else if (strcmp(op, "==") == 0) {
-            left = (left == right);
-        } else if (strcmp(op, "<") == 0) {
-            left = (left < right);
-        } else if (strcmp(op, ">") == 0) {
-            left = (left > right);
-        } else if (strcmp(op, "<=") == 0) {
-            left = (left <= right);
-        } else if (strcmp(op, ">=") == 0) {
-            left = (left >= right);
-        }
-    }
-    
-    return left;
-}
-
 int evaluate_factor() {
     Token token = tokens[current_token];
     current_token++;
@@ -241,9 +175,6 @@ int evaluate_factor() {
     } else if (strcmp(token.type, "PRINT") == 0 || strcmp(token.type, "RESOLVER") == 0) {
         int result = evaluate_expression();
         if (strcmp(token.type, "RESOLVER") == 0) {
-            if(strcmp(tokens[current_token].type,"FLOAT") == 0)
-               printf("%g", atof(result));
-             else
                printf("%d", result);
         }
         return result;
@@ -359,6 +290,72 @@ int evaluate_factor() {
         printf("Error: Unexpected token %s\n", token.type);
         exit(1);
     }
+}
+
+int evaluate_term() {
+    int left = evaluate_factor();
+    while (current_token < token_count && 
+           strcmp(tokens[current_token].type, "OPERATOR") == 0 && 
+           (tokens[current_token].value[0] == '*' || tokens[current_token].value[0] == '/')) {
+        char op = tokens[current_token].value[0];
+        current_token++;
+        int right = evaluate_factor();
+        if (op == '*')
+            left *= right;
+        else {
+            if (right == 0) {
+                printf("Error: Division by zero\n");
+                exit(1);
+            }
+            left /= right;
+        }
+    }
+    return left;
+}
+
+int evaluate_expression() {
+    if (current_token + 2 < token_count &&
+        strcmp(tokens[current_token].type, "IDENTIFIER") == 0 &&
+        strcmp(tokens[current_token + 1].type, "OPERATOR") == 0 &&
+        tokens[current_token + 1].value[0] == '=') {
+        char var_name[MAX_TOKEN_LENGTH];
+        strcpy(var_name, tokens[current_token].value);
+        current_token += 2;
+        int value = evaluate_expression();
+        set_variable(var_name, "int", &value);
+        return value;
+    }
+
+    int left = evaluate_term();
+    
+    while (current_token < token_count && 
+           strcmp(tokens[current_token].type, "OPERATOR") == 0 && 
+           (tokens[current_token].value[0] == '+' || tokens[current_token].value[0] == '-' ||
+            strcmp(tokens[current_token].value, "==") == 0 || strcmp(tokens[current_token].value, "<") == 0 ||
+            strcmp(tokens[current_token].value, ">") == 0 || strcmp(tokens[current_token].value, "<=") == 0 ||
+            strcmp(tokens[current_token].value, ">=") == 0)) {
+        char op[3];
+        strcpy(op, tokens[current_token].value);
+        current_token++;
+        int right = evaluate_term();
+        if (strcmp(op, "+") == 0) {
+            left += right;
+        } else if (strcmp(op, "-") == 0) {
+            left -= right;
+        } else if (strcmp(op, "==") == 0) {
+            left = (left == right);
+        } else if (strcmp(op, "<") == 0) {
+            left = (left < right);
+        } else if (strcmp(op, ">") == 0) {
+            left = (left > right);
+        } else if (strcmp(op, "<=") == 0) {
+            left = (left <= right);
+        } else if (strcmp(op, ">=") == 0) {
+            left = (left >= right);
+        }
+    }
+    
+    return left;
 }
 
 #endif
