@@ -20,26 +20,30 @@ jobs:
 
     - name: Compile
       run: |
-        for file in *.c; do
-          if [ -f "$file" ]; then
-            echo "Compiling $file"
-            gcc -o "${file%.*}" "$file" -lm
-            if [ $? -ne 0 ]; then
-              echo "Error: Compilation failed for $file"
-              exit 1
-            fi
+        cd src
+        if [ -f "main.c" ]; then
+          echo "Compiling. . ."
+          gcc -o main main.c -lm
+          if [ $? -ne 0 ]; then
+            echo "Error: Compilation failed for main.c"
+            exit 1
           fi
-        done
+        else
+          echo "Error: main.c not found in src directory"
+          exit 1
+        fi
 
     - name: Run
       run: |
-        for file in *; do
-          if [ -x "$file" ] && [ -f "$file" ]; then
-            echo "Running $file"
-            ./"$file"
-            if [ $? -ne 0 ]; then
-              echo "Error: Execution failed for $file"
-              exit 1
-            fi
+        cd src
+        if [ -x "main" ]; then
+          echo "Running. . ."
+          ./main
+          if [ $? -ne 0 ]; then
+            echo "Error: Execution failed for main"
+            exit 1
           fi
-        done
+        else
+          echo "Error: main executable not found"
+          exit 1
+        fi 
