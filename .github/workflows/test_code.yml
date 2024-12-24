@@ -1,0 +1,45 @@
+name: Testing code interpreter CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+
+    - name: Compile
+      run: |
+        for file in *.c; do
+          if [ -f "$file" ]; then
+            echo "Compiling $file"
+            gcc -o "${file%.*}" "$file" -lm
+            if [ $? -ne 0 ]; then
+              echo "Error: Compilation failed for $file"
+              exit 1
+            fi
+          fi
+        done
+
+    - name: Run
+      run: |
+        for file in *; do
+          if [ -x "$file" ] && [ -f "$file" ]; then
+            echo "Running $file"
+            ./"$file"
+            if [ $? -ne 0 ]; then
+              echo "Error: Execution failed for $file"
+              exit 1
+            fi
+          fi
+        done
