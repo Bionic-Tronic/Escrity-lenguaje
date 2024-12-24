@@ -23,7 +23,7 @@ jobs:
         cd src
         if [ -f "main.c" ]; then
           echo "Compiling. . ."
-          gcc -o main main.c -lm
+          clang -o main main.c
           if [ $? -ne 0 ]; then
             echo "Error: Compilation failed for main.c"
             exit 1
