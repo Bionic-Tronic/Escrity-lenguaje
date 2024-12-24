@@ -1,6 +1,8 @@
 #ifndef EVALUATE_H
 #define EVALUATE_H
 
+#define MAX_STRING_EVALUATE 1024
+
 void removeQuotes(const char *source, char *dest) {
     while (*source) {
         if (*source != '\"') {
@@ -232,7 +234,7 @@ int evaluate_factor() {
             } else if (strcmp(token.type, "CHAR") == 0) {
         return var->value.char_value;
     } else if (strcmp(token.type, "STRING") == 0) {
-        char result_string[1024];
+        char result_string[MAX_STRING_EVALUATE];
         removeQuotes(token.value, result_string);
         printf("%s", result_string);
         return 0;
@@ -240,15 +242,15 @@ int evaluate_factor() {
         int result = evaluate_expression();
         if (strcmp(token.type, "RESOLVER") == 0) {
             if(strcmp(tokens[current_token].type,"FLOAT") == 0)
-               printf("%g", result);
+               printf("%g", atof(result));
              else
                printf("%d", result);
         }
         return result;
     } else if(strcmp(token.type, "GET_STR") == 0){
-    	char v[1024];
+    	char v[MAX_STRING_EVALUATE];
     	fflush(stdin);
-    	fgets(v,1024,stdin);
+    	fgets(v,MAX_STRING_EVALUATE,stdin);
     	fflush(stdin);
     	return * v;
     } else if (strcmp(var->type, "enum") == 0) {
@@ -259,7 +261,7 @@ int evaluate_factor() {
             }
         }
     } else if (strcmp(token.type, "STRING") == 0) {
-        char result_string[1024];
+        char result_string[MAX_STRING_EVALUATE];
         removeQuotes(token.value, result_string);
         printf("%s", result_string);
         return 0;
@@ -308,7 +310,7 @@ int evaluate_factor() {
     		return 99;
     	} else {
     	   printf("?");
-    	   return ((void*)0);
+    	   return 0;
     	}
         return 0;
     } else if (strcmp(token.type, "OPEN_FILE") == 0) {
