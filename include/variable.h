@@ -52,7 +52,7 @@ int get_type_variable (const char * name){
                 return 97;
         }
     }
-    return NULL;
+    return -1;
 }
 
 int buscar_palabra (String word, String texto){
