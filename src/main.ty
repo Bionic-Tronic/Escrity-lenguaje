@@ -1,27 +1,13 @@
-//Codigo de prueba del Array
-//Se declara el Arreglo
-Array teclas include
-   a : 'a',
-   s : 's',
-   d : 'd',
-   w : 'w',
+enum dias then
+   lunes,
+   martes,
+   miercoles,
+   jueves,
+   viernes,
+   sabado,
+   domingo
 end
-//Se obtiene la tecla pulsada
-tecla = getchar
-//Se verifica con la estructura where y el arreglo declarado si es asdw
-where tecla then
-   when teclas["a"]:
-      text "Se pulso la a\n"
-   stop
-   case teclas["s"]:
-      text "Se pulso la s\n"
-   stop
-   when teclas["d"]:
-      text "Se pulso la d\n"
-   stop
-   when teclas["w"]:
-      text "Se pulso la w\n"
-   stop
-   default:
-      text "Tecla desconocida\n"
-end
+
+dia = dias.jueves
+
+resolver dia
