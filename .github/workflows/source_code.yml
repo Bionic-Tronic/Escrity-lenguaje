@@ -1,40 +1,22 @@
-name: Source Code
-
+name: Escrity source code
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 jobs:
-  build:
+  publish_source:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
 
-    - name: Source Code Archive
-      run: |
-        git archive --format=zip --output=source-code.zip ${{ github.ref }}
-        echo "Archivo ZIP creado: source-code.zip"
+      - name: convert zip
+        run: zip -r source_code.zip .
 
-    - name: Release
-      id: release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Source Code
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./source-code.zip
-        asset_name: source-code.zip
-        asset_content_type: application/zip
+      - name: Upload source code
+        uses: actions/upload-artifact@v3
+        with:
+          name: Source code
+          path: source_code.zip
