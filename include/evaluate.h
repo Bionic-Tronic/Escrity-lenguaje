@@ -199,10 +199,7 @@ int evaluate_factor() {
     } else if (strcmp(token.type, "PRINT") == 0 || strcmp(token.type, "RESOLVER") == 0) {
         int result = evaluate_expression();
         if (strcmp(token.type, "RESOLVER") == 0) {
-            if(strcmp(tokens[current_token].type,"FLOAT") == 0)
-               printf("%f", atof(result));
-             else
-               printf("%d", result);
+            printf("%d", result);
         }
         return result;
     } else if (strcmp(token.type, "GETCHAR") == 0){
