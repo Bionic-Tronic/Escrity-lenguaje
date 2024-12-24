@@ -1,12 +1,5 @@
-#include "../include/definitions.h"
-#include "../include/token.h"
-#include "../include/variable.h"
-#include "../include/function.h"
-#include "../include/object.h"
-#include "../include/enum.h"
-#include "../include/Array.h"
 #include "../include/interpret.h"
-#include "../include/evaluate.h"
+#include <stdio.h>
 
 #define MAX_FILE 1024
 
