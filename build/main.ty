@@ -1,0 +1,37 @@
+enum dias then
+    Lunes,
+    Martes,
+    Miercoles,
+    Jueves,
+    Viernes,
+    Sabado,
+    Domingo
+end
+
+dia = dias.Lunes
+
+where dia then
+    when dias.Lunes:
+       text "Es lunes\n"
+    stop
+    when dias.Martes:
+       text "Es martes\n"
+    stop
+    when dias.Miercoles:
+       text "Es miercoles\n"
+    stop
+    when dias.Jueves:
+       text "Es jueves\n"
+    stop
+    when dias.Viernes:
+       text "Es viernes\n"
+    stop
+    when dias.Sabado:
+       text "Es sabado\n"
+    stop
+    when dias.Domingo:
+       text "Es domingo\n"
+    stop
+    default:
+       text "Dia desconocido\n"
+end
