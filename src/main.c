@@ -9,7 +9,7 @@
 void read_file(const char* filename) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: No se pudo abrir el archivo '%s'\n", filename);
+        fprintf(stderr, "Error: No se pudo abrir el  archivo: '%s'\n", filename);
         exit(1);
     }
     char content_file[MAX_LINE_LENGTH];
@@ -29,18 +29,26 @@ void print_help() {
     printf("Opciones:\n");
     printf("  -i <archivo>    Especifica el archivo de entrada a procesar\n");
     printf("  -h              Muestra este mensaje de ayuda\n");
+    printf("  -v              Muestra la versión del interprete\n");
+}
+
+void print_version () {
+    printf("Escrity 0.0.2a\n");
 }
 
 int main(int argc, char *argv[]) {
     int opt;
     char* filename = NULL;
-    while ((opt = getopt(argc, argv, "i:h")) != -1) {
+    while ((opt = getopt(argc, argv, "i:hv")) != -1) {
         switch (opt) {
             case 'i':
                 filename = optarg;
                 break;
             case 'h':
                 print_help();
+                exit(0);
+            case 'v':
+                print_version();
                 exit(0);
             default:
                 fprintf(stderr, "Uso: %s -i <archivo> o %s -h\n", argv[0], argv[0]);
