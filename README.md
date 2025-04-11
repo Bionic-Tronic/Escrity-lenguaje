@@ -78,7 +78,7 @@ where a then
 end
 ```
 ### Bucles
-Los bucles son practicamente dos hasta ahora: `for` y `while`(estos aun estan un poco rotos):
+Los bucles son practicamente dos hasta ahora: `for` y `while`(el for aun contiene problemas):
 ```
 for (i = 0 at i < 10 at i = i + 1) then
      sendText("Adios\n")
@@ -90,7 +90,7 @@ while true then
 end
 ```
 ### enums
-Tabiem hay soporte a la creación y uso de enums, donde su declaración es similar a los del lenguaje C:
+Tabien hay soporte a la creación y uso de enums, donde su declaración es similar a los del lenguaje C:
 ```
 //Declaración
 enum dias then
@@ -107,13 +107,13 @@ dia_actual = dias.LUNES
 sendText(dia_actual)
 ```
 ### Objects
-Objects no en el sentido estricto de un objecto más bien algo un poco extrano. Miralo como un estructura en la que creas valores constantes y funciones:
+Objects aqui se declaran con la palabra reservada `object` o `Object`. Estos objects sus valores no son mutables en tiempo de interpretación, y al declararse dentro del `object` no pueden estar vació o esto dara error. Las propiedades de los `objects` pueden ser de tipo `int`, `char`, `string`, `float` o `funciones`:
 ```
 //Declaración
 object valores declare
      x : 12,
      y : 23,
-     saludo : fn _anonima_ () then
+     saludo : fn _ () then
           sendText("Saludos\n")
      end
 end
@@ -124,14 +124,13 @@ sendText(x)
 sendText(y)
 valores.saludo()
 ```
-En esta estructura los valores deben ir siempre al inicio o antes de las funciones y las funciones despues. La palabra `_anonima_` es temporal y se piensa cambiarla más adelante por `_`
+En esta estructura los valores deben ir siempre al inicio o antes de las funciones y las funciones despues.
 ### Properties
-Similar a los Objects pero más extranos todavia. 
+Similar a los Objects pero con modificadores de visibilidad como: `priv` y `pub`. Una de las caracteristicas es que los valores declarados pueden ser o no inicializados y darles un valor más adelanten. Si un valor fue declarado y inicializado en la estructura su valor puede cambiar más adelante intependientemente de su valor inicial(inclusive si este era una función)
 En esta estructura los valores si se puede modificar despues de su declaración en la estructura,
 independientemente de su valor inicial era un int, char, etc o inclusibe si era una función.
-Una caracteriscas de esta estructura es que hay que establecer modificadores de aceso(no esto no es un interprete con orientación a objectos)
-donde `priv`(seria privado) y `pub`(publico) si este no se especifica por defecto sera `priv`.
-Las properties que se declaren no estan obligadas a ser inicializada ya que sino lo son, su valor por defecto es 0. A estas properties les falta muchas implentaciones todavia(como usar sus propios valores dentro su sus propias funciones creadas):
+Si un valor es agregado con el modificador `priv` no se puede usar fuera de la `properties` solo dentro(de momento esto aun no se a agregado) y si es `pub` si se puede usar fuera y dentro.
+(Y no no es un interprete con orientación a objectos)
 ```
 //Declaración
 properties valores then
@@ -154,7 +153,7 @@ res = valores.suma(dos,tres)
 sendText(res)
 ```
 ### Arreglos
-Lo arreglos en este interprete estannnnn muy interesante y diferentes:
+Lo arreglos en este interprete aun estan muy verdes y/o hasta muy bugeados. De momento solo hay una forma de declarlos y solo soporta valores de tipo `int` (de momento):
 ```
 //Declaración
 array numeros then
@@ -166,22 +165,7 @@ end
 uno = numeros["uno"]
 sendText(uno)
 ```
-Por el momento esta es una unica forma de crearlos, pero se agregara tambien una forma más logica o normal:
-```
-//Arreglo vacio
-vacio = []
-//Con valores
-valores = [
-     uno is 1,
-     dos is 2,
-     a is 'a'
-]
-//Modificar
-valores["uno"] = 2
-//Agregar
-valores["nuevo"] = 5
-```
-Y tambien de momento los arreglos no pueden cambiar su tamaño en tiempo de ejecución y ni modificar sus valores.
+Más adelante se le agregara el soporte a poder almacenar valores de diversos tipos, tambien a la creación de matrices y tipos distintos de declarar los arreglos:
 ### Otras funciones
 Y finalmente algunas funciones agregadas:
 ```
