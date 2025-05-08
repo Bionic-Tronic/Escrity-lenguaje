@@ -24,12 +24,24 @@ void read_file(const char* filename) {
     interpret();
 }
 
+void interpret_in_line (){
+	char line[1024];
+	puts("Escrity v0.0.2a - 'exit' for exit");
+	while(true){
+		printf(">> ");
+		fgets(line, 1024, stdin);
+		tokenize(line);
+        interpret();
+	}
+}
+
 void print_help() {
     printf("Uso: Escrity [opciones]\n");
     printf("Opciones:\n");
-    printf("  -i <archivo>    Especifica el archivo de entrada a procesar\n");
+    printf("  -i <archivo>    Especifica el archivo de entrada a interpretar\n");
     printf("  -h              Muestra este mensaje de ayuda\n");
     printf("  -v              Muestra la versión del interprete\n");
+    printf("  -l              Un interprete en linea de comandos\n");
 }
 
 void print_version () {
@@ -39,7 +51,7 @@ void print_version () {
 int main(int argc, char *argv[]) {
     int opt;
     char* filename = NULL;
-    while ((opt = getopt(argc, argv, "i:hv")) != -1) {
+    while ((opt = getopt(argc, argv, "i:hvl")) != -1) {
         switch (opt) {
             case 'i':
                 filename = optarg;
@@ -50,6 +62,8 @@ int main(int argc, char *argv[]) {
             case 'v':
                 print_version();
                 exit(0);
+            case 'l':
+                interpret_in_line ();
             default:
                 fprintf(stderr, "Uso: %s -i <archivo> o %s -h\n", argv[0], argv[0]);
                 exit(1);

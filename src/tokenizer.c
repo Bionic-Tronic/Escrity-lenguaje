@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "../include/interpret.h"
+#include "../include/errors.h"
 
 void add_token(const char *type, const char *value){
 	strcpy(tokens[token_count].type, type);
@@ -133,7 +134,7 @@ void tokenize(const char *code){
 			else if (strcmp(buffer, "getchar") == 0)
 				add_token("GETCHAR", buffer);
 			else if (strcmp(buffer, "Object") == 0 || strcmp(buffer, "object") == 0)
-				add_token("STRUCT", buffer);
+				add_token("OBJECT", buffer);
 			else if (strcmp(buffer, "declare") == 0)
 				add_token("DECLARE", buffer);
 			else if (strcmp(buffer, "array") == 0 || strcmp(buffer, "Array") == 0)
@@ -371,8 +372,7 @@ void tokenize(const char *code){
 		}
 		else if (code[i] == ' ' || code[i] == '\t' || code[i] == '\n'){}
 		else{
-			printf("Error: Unexpected character '%c'\n", code[i]);
-			exit(1);
+			unexpected_character(code[i],ERROR_SINTAXIS);
 		}
 	}
 }
