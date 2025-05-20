@@ -1,0 +1,31 @@
+name: Compile LinuxARM and test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-latest-arm64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (ARM64)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake
+
+      - name: Run build script
+        run: |
+          mkdir -p build && cd build
+          cmake ..
+          cmake --build .
+
+      - name: Upload ARM64 executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: escrity-arm64-executable
+          path: build/escrity
