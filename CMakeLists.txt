@@ -1,31 +1,23 @@
-cmake_minimum_required(VERSION 3.31.3)
+cmake_minimum_required(VERSION 3.20.0)
 project(escrity)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 include_directories(
-	${PROJECT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/src
-)
-file(GLOB SRCS
-	"${PROJECT_SOURCE_DIR}/include/*"
-	"${PROJECT_SOURCE_DIR}/src/*"
+    ${PROJECT_SOURCE_DIR}/include
 )
 set(SOURCES
     src/main.c
     src/interpret.c
-    src/evaluator.c
     src/tokenizer.c
-    src/protocol.c
-    src/errors.c
-    src/function.c
+    src/evaluator.c
+    src/error.c
     src/variable.c
+    src/str.c
+    src/array.c
+    src/enum.c
+    src/function.c
     src/object.c
     src/properties.c
-    src/array.c
-    src/enums.c
+    src/protocol.c
 )
-add_executable(escrity ${SRCS})
-find_package(SQLite3 REQUIRED)
-target_link_libraries(escrity ${SQLite3_LIBRARIES})
-find_package(Curses REQUIRED)
-target_link_libraries(escrity ${CURSES_LIBRARIES})
-find_package(CURL REQUIRED)
-target_link_libraries(escrity ${CURL_LIBRARIES})
+add_executable(escrity ${SOURCES})
