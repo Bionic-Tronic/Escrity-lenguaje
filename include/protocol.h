@@ -2,7 +2,6 @@
 #define PROTOCOL_H
 
 #include "interpret.h"
-#include "errors.h"
 
 void protocol_http (Protocol * pro);
 void protocol_ftp ();
@@ -23,3 +22,4 @@ Protocol * get_protocol (const char * name);
 void * evalue_http_protocol (Protocol * pro, const char * member_name);
 
 #endif
+

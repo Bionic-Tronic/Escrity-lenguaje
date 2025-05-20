@@ -1,9 +1,10 @@
-#ifndef ERRORS_H
-#define ERRORS_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include "interpret.h"
 
-Struct* get_struct(const char* name);
-void define_struct();
+Object * get_object(const char* name);
+void define_object();
 
 #endif
+
