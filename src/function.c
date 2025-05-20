@@ -1,19 +1,21 @@
 #include "../include/function.h"
+#include "../include/error.h"
 #include "../include/variable.h"
 
 void define_function() {
+    char * type_param = "int";
     if (function_count >= MAX_FUNCTIONS)
         show_errors ("Too many functions",-1);
-    Function* func = &functions[function_count++];
+    Function * func = &functions[function_count++];
     if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0)
         show_errors ("Expeced function name",-1);
     strcpy(func->name, tokens[current_token].value);
     current_token++;
-    if (current_token >= token_count || strcmp(tokens[current_token].type, "PAREN") != 0 || strcmp(tokens[current_token].value, "(") != 0)
+    if (current_token >= token_count || strcmp(tokens[current_token].type, "L_PAREN") != 0 || strcmp(tokens[current_token].value, "(") != 0)
         show_errors ("Expeced '(' after function name",-1);
     current_token++;
     func->param_count = 0;
-    while (current_token < token_count && strcmp(tokens[current_token].type, "PAREN") != 0) {
+    while (current_token < token_count && strcmp(tokens[current_token].type, "L_PAREN") != 0) {
         if (strcmp(tokens[current_token].type, "IDENTIFIER") != 0)
             show_errors ("Expected parameter name",-1);
         strcpy(func->params[func->param_count++], tokens[current_token].value);
@@ -22,26 +24,24 @@ void define_function() {
             show_errors ("Expected ':' for type variable",-1);
         current_token++;
         if (strcmp(tokens[current_token].type,"STRING_PARAM") == 0) {
-        	strcpy(func->params_type[func->param_count], "string");
+        	type_param = "string";
         }
-        if (strcmp(tokens[current_token].type,"FLOAT_PARAM") == 0) {
-        	strcpy(func->params_type[func->param_count], "float");
+        else if (strcmp(tokens[current_token].type,"FLOAT_PARAM") == 0) {
+        	type_param = "float";
         }
-        if (strcmp(tokens[current_token].type,"INTEGER_PARAM") == 0) {
-        	strcpy(func->params_type[func->param_count], "int");
+        else if (strcmp(tokens[current_token].type,"INTEGER_PARAM") == 0) {
+        	type_param = "int";
         }
-        if (strcmp(tokens[current_token].type,"CHAR_PARAM") == 0) {
-        	strcpy(func->params_type[func->param_count], "char");
+        else if (strcmp(tokens[current_token].type,"CHAR_PARAM") == 0) {
+        	type_param = "char";
         }
-        if (strcmp(tokens[current_token].type,"BOOL_PARAM") == 0) {
-        	strcpy(func->params_type[func->param_count], "bool");
+        else if (strcmp(tokens[current_token].type,"BOOL_PARAM") == 0) {
+        	type_param = "bool";
         }
-        if (strcmp(tokens[current_token].type,"WAIT_PARAM") == 0) {
-        	strcpy(func->params_type[func->param_count], "wait");
+        else {
+            show_errors("Expected type param", ERROR_INTERPRETER);
         }
-        if (strcmp(tokens[current_token].type,"CONST_PARAM") == 0) {
-        	strcpy(func->params_type[func->param_count], "const");
-        }
+        strcpy(func->params_type[func->type_param_count++], type_param);
         current_token++;
         if (current_token < token_count && strcmp(tokens[current_token].type, "COMMA") == 0)
             current_token++;
@@ -69,7 +69,7 @@ void * call_function(Function* func, void * args[], int arg_count) {
     int saved_var_count = variable_count;
     memcpy(saved_vars, variables, sizeof(variables));
     for (int i = 0; i < func->param_count; i++) {
-        set_variable(func->params[i], "int", &args[i]);
+        set_variable(func->params[i], func->params_type[i], &args[i]);
     }
     int saved_current_token = current_token;
     Token saved_tokens[MAX_TOKENS];
@@ -86,6 +86,7 @@ void * call_function(Function* func, void * args[], int arg_count) {
             break;
         }
         evaluate_expression();
+        interpret();
     }
     memcpy(tokens, saved_tokens, sizeof(tokens));
     token_count = saved_token_count;
@@ -102,3 +103,4 @@ Function* get_function(const char* name) {
     }
     return NULL;
 }
+

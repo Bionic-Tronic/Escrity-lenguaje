@@ -1,346 +1,225 @@
 #include "../include/array.h"
+#include "../include/error.h"
 
-ARRAY * get_ARRAY (const char * index){
-	for (int i = 0; i < values_count; i++) {
-        if (strcmp(ARRAYS[i].name, index) == 0) {
-            return &ARRAYS[i];
-        }
-    }
-    return NULL;
-}
-
-Vector * get_vector (const char * name){
-	for (int i = 0; i < values_count; i++) {
-        if (strcmp(vec[i].name, name) == 0) {
-            return &vec[i];
-        }
-    }
-    return NULL;
-}
-
-void define_vector (){
-	if (ARRAY_count >= MAX_ARRAY_SIZE)
-		show_errors("Too many vectors",-1);
-	Vector * vecto = &vec[vector_count++];
-	vecto->member_count = vector_count;
-	if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0)
-	   show_errors ("Expected vector name",-1);
-	strcpy(vecto->name, tokens[current_token].value);
-	current_token++;
-	if (tokens[current_token].value[0] != ':')
-	   show_errors("Expected ':' in vector struct",-1);
-	current_token++;
-	if(strcmp(tokens[current_token].type,"ADD") != 0)
-	   show_errors ("Expected 'add' in vector struct",-1);
-	current_token++;
-	if(strcmp(tokens[current_token].type,"PAREN") != 0)
-	   show_errors ("Expected '(' before 'add' in vector struct",-1);
-	current_token++;
-	if(strcmp(tokens[current_token].type, "NUMBER") == 0){
-		strcpy(vecto->members[vecto->member_count].name, "x");
-		strcpy(vecto->members[vecto->member_count].type, "int");
-		vecto->members[vecto->member_count].value.int_value = atoi(tokens[current_token].value);
-	} else
-		show_errors ("Expected at number before 'add' in vector struct",-1);
-	current_token++;
-	if(strcmp(tokens[current_token].type,"COMMA") != 0)
-	   show_errors ("Expected ',' before 'add' in vector struct",-1);
-	current_token++;
-	if(strcmp(tokens[current_token].type, "NUMBER") == 0){
-		strcpy(vecto->members[vecto->member_count].name, "y");
-		strcpy(vecto->members[vecto->member_count].type, "int");
-		vecto->members[vecto->member_count].value.int_value = atoi(tokens[current_token].value);
-	} else
-		show_errors ("Expected at number before 'add' in vector struct",-1);
-	current_token++;
-	if(strcmp(tokens[current_token].type,"PAREN") != 0)
-	   show_errors ("Expected ')' before 'add' in vector struct",-1);
-	current_token++;
-	vector_count++;
-	values_count++;
-}
-
-void define_ARRAY () {
-	if (ARRAY_count >= MAX_ARRAY_SIZE)
-		show_errors("Too many arrays",-1);
-	ARRAY * array = &ARRAYS[ARRAY_count++];
-	if (tokens[current_token].value[0] != '<')
-	   show_errors("Expected '<' in array structure",-1);
-	current_token++;
-	if (strcmp(tokens[current_token].type,"INTEGER_PARAM") != 0 )
-	   show_errors("Not declared a type array",-1);
-	current_token++;
-	if (tokens[current_token].value[0] != '>')
-	   show_errors("Expected '>' in array structure",-1);
-	current_token++;
-	if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0)
-	   show_errors ("Expected array name",-1);
-	strcpy(array->name, tokens[current_token].value);
-	current_token++;
-	if(strcmp(tokens[current_token].type,"THEN") != 0)
-	   show_errors ("Expected 'then' before array name",-1);
-	current_token++;
-	array->member_count = 0;
-	while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
-		if (strcmp(tokens[current_token].type,"NUMBER") == 0){
-			char index[1024];
-            snprintf(index, 1024, "%i", array->member_count);
-			strcpy(array->members[array->member_count].name,index);
-			strcpy(array->members[array->member_count].type, "int");
-            array->members[array->member_count].value.int_value = atoi(tokens[current_token].value);
-		} else if (strcmp(tokens[current_token].type,"FLOAT") == 0){
-			char index[1024];
-            snprintf(index, 1024, "%i", array->member_count);
-			strcpy(array->members[array->member_count].name,index);
-			strcpy(array->members[array->member_count].type, "float");
-            array->members[array->member_count].value.float_value = atof(tokens[current_token].value);
-		} else if (strcmp(tokens[current_token].type,"STRING") == 0){
-			char index[1024];
-            snprintf(index, 1024, "%i", array->member_count);
-			strcpy(array->members[array->member_count].name,index);
-			strcpy(array->members[array->member_count].type, "string");
-			strcpy(array->members[array->member_count].value.string_value, tokens[current_token].value);
-		} else if (strcmp(tokens[current_token].type,"TRUE") == 0){
-			char index[1024];
-            snprintf(index, 1024, "%i", array->member_count);
-			strcpy(array->members[array->member_count].name,index);
-			strcpy(array->members[array->member_count].type, "bool");
-            array->members[array->member_count].value.bool_value = atoi(tokens[current_token].value);
-		} else if (strcmp(tokens[current_token].type,"FALSE") == 0){
-			char index[1024];
-            snprintf(index, 1024, "%i", array->member_count);
-			strcpy(array->members[array->member_count].name,index);
-			strcpy(array->members[array->member_count].type, "bool");
-            array->members[array->member_count].value.bool_value = atoi(tokens[current_token].value);
-		} else if (strcmp(tokens[current_token].type,"CHAR") == 0){
-			char index[1024];
-            snprintf(index, 1024, "%i", array->member_count);
-			strcpy(array->members[array->member_count].name,index);
-			strcpy(array->members[array->member_count].type, "char");
-            array->members[array->member_count].value.char_value = tokens[current_token].value[1];
-		} else
-		    show_errors ("Invalid value for array",-1);
-		current_token++;
-        array->member_count++;
-	}
-	current_token++;
-}
-
-Array* get_array(const char* name) {
-    for (int i = 0; i < array_count; i++) {
+Array * get_array (const char * name) {
+  for (int i = 0; i < array_count; i++) {
         if (strcmp(arrays[i].name, name) == 0) {
             return &arrays[i];
         }
-    }
+  }
     return NULL;
 }
 
-void define_classic_array () {
-}
-void define_new_array () {
-}
-
-void define_array() {
-    if (array_count >= MAX_ARRAY_SIZE) {
-        show_errors ("",-1);
-        printf("Error: Too many arrays\n");
-        exit(1);
-    }
-    Array* arr = &arrays[array_count++];
-    if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0) {
-        printf("Error: Expected array name\n");
-        exit(1);
-    }
-    strcpy(arr->name, tokens[current_token].value);
-    current_token++;
-    if (current_token >= token_count || strcmp(tokens[current_token].type, "THEN") != 0) {
-        printf("Error: Expected 'then' after array name\n");
-        exit(1);
-    }
-    current_token++;
-    arr->member_count = 0;
-    while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
-        if (strcmp(tokens[current_token].type, "IDENTIFIER") != 0) {
-            printf("Error: Expected member name\n");
-            exit(1);
-        }
-        strcpy(arr->members[arr->member_count].name, tokens[current_token].value);
-        current_token++;
-        if (current_token >= token_count || strcmp(tokens[current_token].type, "IS") != 0) {
-            printf("Error: Expected 'is' after member name\n");
-            exit(1);
-        }
-        current_token++;
-        if (current_token >= token_count) {
-            printf("Error: Expected member value\n");
-            exit(1);
-        }
-        if (strcmp(tokens[current_token].type, "NUMBER") == 0) {
-            strcpy(arr->members[arr->member_count].type, "int");
-            arr->members[arr->member_count].value.int_value = atoi(tokens[current_token].value);
-        } else if (strcmp(tokens[current_token].type, "FLOAT") == 0) {
-            strcpy(arr->members[arr->member_count].type, "float");
-            arr->members[arr->member_count].value.float_value = atof(tokens[current_token].value);
-        } else if (strcmp(tokens[current_token].type, "STRING") == 0) {
-            strcpy(arr->members[arr->member_count].type, "string");
-            strcpy(arr->members[arr->member_count].value.string_value, tokens[current_token].value);
-        } else if (strcmp(tokens[current_token].type, "CHAR") == 0) {
-            strcpy(arr->members[arr->member_count].type, "char");
-            arr->members[arr->member_count].value.char_value = tokens[current_token].value[1];
-        } else if (strcmp(tokens[current_token].type, "ARRAY") == 0) {
-            strcpy(arr->members[arr->member_count].type, "array");
-            int nested_array[MAX_ARRAY_SIZE];
-            int nested_size = 0;
-            current_token++;
-            while (current_token < token_count && strcmp(tokens[current_token].type, "BRACKET") != 0) {
-                nested_array[nested_size++] = evaluate_expression();
-                if (current_token < token_count && strcmp(tokens[current_token].type, "COMMA") == 0) {
-                    current_token++;
-                }
-            }
-            if (current_token >= token_count || strcmp(tokens[current_token].value, "]") != 0) {
-                printf("Error: Expected ']' after nested array\n");
-                exit(1);
-            }
-            current_token++;
-            arr->members[arr->member_count].value.array_value = malloc(nested_size * sizeof(int));
-            memcpy(arr->members[arr->member_count].value.array_value, nested_array, nested_size * sizeof(int));
-            arr->members[arr->member_count].value.array_size = nested_size;
-        } else if (strcmp(tokens[current_token].type, "IDENTIFIER") == 0 && strcmp(tokens[current_token].value, "Array") == 0) {
-            strcpy(arr->members[arr->member_count].type, "array");
-            Array* nested_arr = &arrays[array_count++];
-            arr->members[arr->member_count].value.array_value = nested_arr;
-            current_token++;
-            if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0 || strcmp(tokens[current_token].value, "_anonima_") != 0) {
-                printf("Error: Expected '_anonima_' for anonymous array\n");
-                exit(1);
-            }
-            current_token++;
-            if (current_token >= token_count || strcmp(tokens[current_token].type, "INCLUDE") != 0) {
-                printf("Error: Expected 'include' after '_anonima_'\n");
-                exit(1);
-            }
-            current_token++;
-            nested_arr->member_count = 0;
-            while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
-                if (strcmp(tokens[current_token].type, "IDENTIFIER") != 0) {
-                    printf("Error: Expected member name in nested array\n");
-                    exit(1);
-                }
-                strcpy(nested_arr->members[nested_arr->member_count].name, tokens[current_token].value);
-                current_token++;
-                if (current_token >= token_count || strcmp(tokens[current_token].type, "COLON") != 0) {
-                    printf("Error: Expected ':' after member name in nested array\n");
-                    exit(1);
-                }
-                current_token++;
-                if (current_token >= token_count) {
-                    printf("Error: Expected member value in nested array\n");
-                    exit(1);
-                }
-                if (strcmp(tokens[current_token].type, "NUMBER") == 0) {
-                    strcpy(nested_arr->members[nested_arr->member_count].type, "int");
-                    nested_arr->members[nested_arr->member_count].value.int_value = atoi(tokens[current_token].value);
-                } else if (strcmp(tokens[current_token].type, "FLOAT") == 0) {
-                    strcpy(nested_arr->members[nested_arr->member_count].type, "float");
-                    nested_arr->members[nested_arr->member_count].value.float_value = atof(tokens[current_token].value);
-                } else if (strcmp(tokens[current_token].type, "STRING") == 0) {
-                    strcpy(nested_arr->members[nested_arr->member_count].type, "string");
-                    strcpy(nested_arr->members[nested_arr->member_count].value.string_value, tokens[current_token].value);
-                } else if (strcmp(tokens[current_token].type, "CHAR") == 0) {
-                    strcpy(nested_arr->members[nested_arr->member_count].type, "char");
-                    nested_arr->members[nested_arr->member_count].value.char_value = tokens[current_token].value[1];
-                } else {
-                    printf("Error: Invalid member value in nested array\n");
-                    exit(1);
-                }
-                current_token++;
-                nested_arr->member_count++;
-                if (current_token < token_count && strcmp(tokens[current_token].type, "COMMA") == 0) {
-                    current_token++;
-                }
-            }
-            if (current_token >= token_count || strcmp(tokens[current_token].type, "END") != 0) {
-                printf("Error: Expected 'end' at the end of nested array\n");
-                exit(1);
-            }
-            current_token++;
-        } else if (strcmp(tokens[current_token].type, "IDENTIFIER") == 0 && strcmp(tokens[current_token].value, "enum") == 0) {
-            strcpy(arr->members[arr->member_count].type, "enum");
-            Enum* e = &enums[enum_count++];
-            arr->members[arr->member_count].value.struct_value = e;
-            current_token++;
-            if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0 || strcmp(tokens[current_token].value, "_anonima_") != 0) {
-                printf("Error: Expected '_anonima_' for anonymous enum\n");
-                exit(1);
-            }
-            current_token++;
-            if (current_token >= token_count || strcmp(tokens[current_token].type, "THEN") != 0) {
-                printf("Error: Expected 'then' after '_anonima_'\n");
-                exit(1);
-            }
-            current_token++;
-            e->member_count = 0;
-            while (current_token < token_count && strcmp(tokens[current_token].type, "END") != 0) {
-                if (strcmp(tokens[current_token].type, "IDENTIFIER") != 0) {
-                    printf("Error: Expected enum member name\n");
-                    exit(1);
-                }
-                strcpy(e->members[e->member_count], tokens[current_token].value);
-                e->member_count++;
-                current_token++;
-                if (current_token < token_count && strcmp(tokens[current_token].type, "COMMA") == 0) {
-                    current_token++;
-                }
-            }
-            if (current_token >= token_count || strcmp(tokens[current_token].type, "END") != 0) {
-                printf("Error: Expected 'end' at the end of enum\n");
-                exit(1);
-            }
-            current_token++;
-        } else {
-            printf("Error: Invalid member value\n");
-            exit(1);
-        }
-        current_token++;
-        arr->member_count++;
-        if (current_token < token_count && strcmp(tokens[current_token].type, "COMMA") == 0) {
-            current_token++;
-        }
-    }
-    if (current_token >= token_count || strcmp(tokens[current_token].type, "END") != 0) {
-        printf("Error: Expected 'end' at the end of array\n");
-        exit(1);
-    }
-    current_token++;
-    set_variable(arr->name, "array", arr);
-}
-
-void * evaluate_array_access(Array *arr, const char *key){
-	char clean_key[MAX_TOKEN_LENGTH];
-	strncpy(clean_key, key + 1, strlen(key) - 2);
-	clean_key[strlen(key) - 2] = '\0';
-	for (int i = 0; i < arr->member_count; i++){
-		if (strcmp(arr->members[i].name, clean_key) == 0){
-			if (strcmp(arr->members[i].type, "int") == 0)
-				return arr->members[i].value.int_value;
-			else if (strcmp(arr->members[i].type, "float") == 0)
-				return (int)arr->members[i].value.float_value;
-			else if (strcmp(arr->members[i].type, "char") == 0)
-				return arr->members[i].value.char_value;
-			else if (strcmp(arr->members[i].type, "enum") == 0)
-				return arr->members[i].value.enum_value;
-			else if (strcmp(arr->members[i].type, "array") == 0)
-				return 0;
-			else if (strcmp(arr->members[i].type, "string") == 0){
-				return arr->members[i].value.string_value;
-			}
-			else{
-				printf("Error: Cannot evaluate array member '%s' of type '%s'\n", clean_key, arr->members[i].type);
-				exit(1);
-			}
+void define_array (){
+	int max_elements;
+	char * param;
+	if (array_count >= MAX_ARRAY_SIZE)
+		show_errors("Too many arrays", ERROR_INTERPRETER);
+	Array * arr = &arrays[array_count];
+	expected("(","create_array","L_PAREN");
+	if (verify_token("STRING") == true){
+		char str[MAX_TOKEN_LENGTH];
+		removeQuotes(get_token_value(), str);
+		strcpy(arr->name, str);
+	} else if (verify_token("IDENTIFIER")){
+		Variable * var = get_variable(get_token_value());
+		if (var == NULL){
+			strcpy(arr->name, get_token_value());
+		} else
+			simple_error_msg("Invalid name for array. this name in use",ERROR_INTERPRETER);
+	} else
+		simple_error_msg("Invalid name for array",ERROR_INTERPRETER);
+	current_token++;
+	expected(",","create_array","COMMA");
+	if (verify_token("NUMBER") == true){
+		max_elements = get_int_token_value();
+	} else if (verify_token("IDENTIFIER")){
+		Variable * var = get_variable(get_token_value());
+		if (var != NULL){
+			if (strcmp(var->type,"int") == 0){
+				max_elements = var->value.int_value;
+			} else
+			      invalid_var(get_token_value(), ERROR_SINTAXIS);
 		}
+	} else
+		show_errors("Expected a 'int' value in size_array", ERROR_INTERPRETER);
+	current_token++;
+	expected(",","create_array","COMMA");
+	if (verify_token("STRING_PARAM") == true){
+		param = "string";
+	} else if (verify_token("INTEGER_PARAM") == true){
+		param = "int";
+	} else if (verify_token("FLOAT_PARAM") == true){
+		param = "float";
+	} else if (verify_token("CHAR_PARAM") == true){
+		param = "char";
+	} else if (verify_token("BOOL_PARAM") == true){
+		param = "bool";
+	} else {
+		simple_error_msg("Invalid type param", ERROR_SINTAXIS);
 	}
-	printf("Error: Array key '%s' not found\n", clean_key);
-	exit(1);
+	strcpy(arr->type,param);
+	for (int i = 0; i < max_elements; i++){
+		strcpy(arr->members[i].name, atos(i));
+		strcpy(arr->members[i].type, param);
+		if (strcmp(param,"string") == 0)
+			strcpy(arr->members[i].value.string_value, "(empty)");
+		else if (strcmp(param,"int") == 0)
+			arr->members[i].value.int_value = -1;
+		else if (strcmp(param,"float") == 0)
+			arr->members[i].value.float_value = 0;
+		else if (strcmp(param,"char") == 0)
+			arr->members[i].value.char_value = 'a';
+		else if (strcmp(param,"bool") == 0)
+			arr->members[i].value.bool_value = false;
+		arr->member_count++;
+	}
+	current_token++;
+	expected(")","create_array","R_PAREN");
+	array_count++;
 }
+void * acess_array (){
+current_token--;
+			char * name = get_token_value();
+			current_token+=2;
+			char * index;
+			int concidencia;
+			if (verify_token("NUMBER")){
+				index = get_token_value();
+			} else if (verify_token("IDENTIFIER")){
+				Variable * var = get_variable(get_token_value());
+				if (var != NULL){
+					if (strcmp(var->type,"int") != 0)
+						notEvaluateVariable(get_token_value(), var->type, ERROR_INTERPRETER);
+					index = atos(var->value.int_value);
+				} else
+					invalid_var(get_token_value(), ERROR_SINTAXIS);
+			} else
+				simple_error_msg("array index is not an integer",ERROR_SINTAXIS);
+			void * value;
+			Array * a = get_array(name);
+			if (a != NULL) {
+				int int_index = atoi(index);
+				if (int_index > a->member_count)
+					simple_error_msg("array index 'index' is past the end of the array (which contains '9' elements)", ERROR_INTERPRETER);
+				for (int i = 0; i < a->member_count; i++){
+					if (strcmp(a->members[i].name,index) == 0){
+						if (strcmp(a->members[i].type, "int") == 0){
+							concidencia = i;
+							value = &a->members[i].value.int_value;
+							type_value_return = "int";
+							break;
+						} else if (strcmp(a->members[i].type, "float") == 0){
+							value = &a->members[i].value.float_value;
+							type_value_return = "float";
+							break;
+						} else if (strcmp(a->members[i].type, "string") == 0){
+							value = &a->members[i].value.string_value;
+							type_value_return = "string";
+							break;
+						} else if (strcmp(a->members[i].type, "char") == 0){
+							value = &a->members[i].value.char_value;
+							type_value_return = "char";
+							break;
+						} else if (strcmp(a->members[i].type, "bool") == 0){
+							value = (void *)a->members[i].value.bool_value;
+							type_value_return = "bool";
+							break;
+						} else {
+							show_errors("Invalid type in array", UNDEFINED_ERROR);
+						}
+					}
+				}
+				current_token++;
+				expected("]", "array not","BRACKET");
+				if (verify_token("OPERATOR") == true){
+					if (verify_token_value("=") == true){
+						current_token++;
+						if (strcmp(a->type,"int") == 0){
+							if (verify_token("NUMBER") == true){
+								a->members[concidencia].value.int_value = atoi(get_token_value());
+								return value;
+							} else if (verify_token("IDENTIFIER")){
+								Variable * var = get_variable(get_token_value());
+								if (var != NULL){
+					                 if (strcmp(var->type,"int") == 0){
+					                      a->members[concidencia].value.int_value = var->value.int_value;
+					                      return 0;
+					                 }
+					            notEvaluateVariable(get_token_value(), var->type, ERROR_INTERPRETER);
+				                } else
+				                     invalid_var(get_token_value(), ERROR_SINTAXIS);
+							}
+						} else if (strcmp(a->type,"float") == 0){
+							if (verify_token("FLOAT") == true){
+								a->members[concidencia].value.float_value = atof(get_token_value());
+								return 0;
+							} else if (verify_token("IDENTIFIER")){
+								Variable * var = get_variable(get_token_value());
+								if (var != NULL){
+					                 if (strcmp(var->type,"float") == 0){
+					                      a->members[concidencia].value.float_value = var->value.float_value;
+					                      return 0;
+					                 }
+					            notEvaluateVariable(get_token_value(), var->type, ERROR_INTERPRETER);
+				                } else
+				                     invalid_var(get_token_value(), ERROR_SINTAXIS);
+							}
+						} else if (strcmp(a->type,"char") == 0){
+							if (verify_token("CHAR") == true){
+								a->members[concidencia].value.char_value = get_char_token_value();
+								return 0;
+							} else if (verify_token("IDENTIFIER")){
+								Variable * var = get_variable(get_token_value());
+								if (var != NULL){
+					                 if (strcmp(var->type,"char") == 0){
+					                      a->members[concidencia].value.char_value = var->value.char_value;
+					                      return 0;
+					                 }
+					            notEvaluateVariable(get_token_value(), var->type, ERROR_INTERPRETER);
+				                } else
+				                     invalid_var(get_token_value(), ERROR_SINTAXIS);
+							}
+						} else if (strcmp(a->type,"string") == 0){
+							if (verify_token("STRING") == true){
+								char str[MAX_TOKEN_LENGTH];
+								removeQuotes(get_token_value(), str);
+								strcpy(a->members[concidencia].value.string_value, str);
+								return 0;
+							} else if (verify_token("IDENTIFIER")){
+								Variable * var = get_variable(get_token_value());
+								if (var != NULL){
+					                 if (strcmp(var->type,"string") == 0){
+					                      strcpy(a->members[concidencia].value.string_value, var->value.string_value);
+					                      return 0;
+					                 }
+					            notEvaluateVariable(get_token_value(), var->type, ERROR_INTERPRETER);
+				                } else
+				                     invalid_var(get_token_value(), ERROR_SINTAXIS);
+							}
+						}  else if (strcmp(a->type,"bool") == 0){
+							if (verify_token("TRUE") == true){
+								a->members[concidencia].value.float_value = atoi(get_token_value());
+								return 0;
+							} else if (verify_token("IDENTIFIER")){
+								Variable * var = get_variable(get_token_value());
+								if (var != NULL){
+					                 if (strcmp(var->type,"bool") == 0){
+					                      a->members[concidencia].value.float_value = var->value.float_value;
+					                      return 0;
+					                 }
+					            notEvaluateVariable(get_token_value(), var->type, ERROR_INTERPRETER);
+				                } else
+				                     invalid_var(get_token_value(), ERROR_SINTAXIS);
+							}
+						}
+					} else {
+						show_errors("Expected '=' in array declaration",ERROR_SINTAXIS);
+					}
+				}
+				return value;
+			} else {
+				show_errors("Array not defined", ERROR_INTERPRETER);
+			}
+}
+

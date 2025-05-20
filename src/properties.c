@@ -1,7 +1,8 @@
 #include "../include/properties.h"
+#include "../include/error.h"
 
 Properties * get_properties (const char* name){
-	for (int i = 0; i < struct_count; i++) {
+	for (int i = 0; i < properties_count; i++) {
         if (strcmp(pro[i].name, name) == 0) {
             return &pro[i];
         }
@@ -95,3 +96,4 @@ void define_properties() {
         show_errors ("Expected 'end' at the end of properties",-1);
     current_token++;
 }
+

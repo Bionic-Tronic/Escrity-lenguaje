@@ -1,4 +1,6 @@
 #include "../include/protocol.h"
+#include "../include/error.h"
+#include "../include/variable.h"
 
 void protocol_http (Protocol * pro){
 	pro->client_len = sizeof(pro->client_addr);
@@ -102,7 +104,7 @@ void protocol_http (Protocol * pro){
             current_token++;
             if (strcmp(tokens[current_token].type,"STRING") != 0)
                  show_errors("Expected a string value in dir http protocol", ERROR_SINTAXIS);
-            char aux[MAX_STR];
+            char aux[MAX_TOKEN_LENGTH];
             removeQuotes(tokens[current_token].value,aux);
             strcpy(pro->dir,aux);
             current_token++;
@@ -138,7 +140,7 @@ void protocol_http (Protocol * pro){
             current_token++;
             if (strcmp(tokens[current_token].type,"STRING") != 0)
                  show_errors("Expected a string in files_accept http protocol", ERROR_SINTAXIS);
-            char aux[MAX_STR];
+            char aux[MAX_TOKEN_LENGTH];
             removeQuotes(tokens[current_token].value,aux);
             strcpy(pro->files_accept,aux);
             current_token++;
@@ -152,7 +154,7 @@ void protocol_http (Protocol * pro){
             current_token++;
             if (strcmp(tokens[current_token].type,"STRING") != 0)
                  show_errors("Expected a string in mimes_accept http protocol", ERROR_SINTAXIS);
-            char aux[MAX_STR];
+            char aux[MAX_TOKEN_LENGTH];
             removeQuotes(tokens[current_token].value,aux);
             strcpy(pro->mimes_accept,aux);
             current_token++;
@@ -197,9 +199,8 @@ Protocol * get_protocol (const char * name){
 }
 
 void define_protocol (){
-	char * type_protocol = "http";
-	if (struct_count >= MAX_VARIABLES)
-        show_errors ("Too many protocols",-1);
+    char * type_protocol = "http";
+    if (protocol_count >= MAX_VARIABLES) show_errors ("Too many protocols",-1);
     Protocol * pro = &protocol[protocol_count++];
     if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0)
         show_errors ("Expeced protocol name",-1);

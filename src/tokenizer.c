@@ -1,9 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "../include/interpret.h"
-#include "../include/errors.h"
+#include "../include/error.h"
+
 
 void add_token(const char *type, const char *value){
 	strcpy(tokens[token_count].type, type);
@@ -11,7 +8,7 @@ void add_token(const char *type, const char *value){
 	token_count++;
 }
 char *unescape_string(const char *input){
-	static char buffer[MAX_TOKEN_LENGTH];
+  char *  buffer =  malloc(MAX_TOKEN_LENGTH);
 	int i, j;
 	for (i = 0, j = 0; input[i] != '\0'; i++, j++){
 		if (input[i] == '\\' || input[i] == '@'){
@@ -63,11 +60,11 @@ void tokenize(const char *code){
 		    continue;
 		}
 		if (code[i] == '+' && code[i + 1] == '+'){
-		    add_token("AUM","++");
+		    add_token("INCREMENT","++");
 		    continue;
 		}
 		if (code[i] == '-' && code[i + 1] == '-'){
-		    add_token("SUD","--");
+		    add_token("DECREMENT","--");
 		    continue;
 		}
 		if (code[i] == '*' && code[i + 1] == '='){
@@ -86,6 +83,14 @@ void tokenize(const char *code){
 		    add_token("SUDD","-=");
 		    continue;
 		}
+		if (code[i] == '.' && code[i + 1] == '='){
+		    add_token("CAT",".=");
+		    continue;
+		}
+		if (code[i] == '<' && code[i + 1] == '<'){
+		    add_token("CAT_STR","<<");
+		    continue;
+		}
 		if (isalpha(code[i]) || code[i] == '_'){
 			buffer[buffer_pos++] = code[i];
 			while (isalnum(code[i + 1]) || code[i + 1] == '_')
@@ -93,8 +98,8 @@ void tokenize(const char *code){
 			buffer[buffer_pos] = '\0';
 			if (strcmp(buffer, "add") == 0)
 				add_token("ADD", buffer);
-			else if (strcmp(buffer, "sendText") == 0)
-				add_token("PRINT_", buffer);
+			else if (strcmp(buffer, "puts") == 0)
+				add_token("PUTS", buffer);
 			else if (strcmp(buffer, "protocol") == 0)
 				add_token("PROTOCOL", buffer);
 			else if (strcmp(buffer, "func") == 0 || strcmp(buffer, "function") == 0 || strcmp(buffer, "fn") == 0)
@@ -113,8 +118,8 @@ void tokenize(const char *code){
 				add_token("FOR", buffer);
 			else if (strcmp(buffer, "while") == 0)
 				add_token("WHILE", buffer);
-			else if (strcmp(buffer, "set") == 0)
-				add_token("SET", buffer);
+			else if (strcmp(buffer, "get") == 0)
+				add_token("GET", buffer);
 			else if (strcmp(buffer, "DEFAULT_BUFFER") == 0)
 				add_token("DEFAULT_BUFFER", buffer);
 			else if (strcmp(buffer, "values") == 0)
@@ -129,8 +134,8 @@ void tokenize(const char *code){
 				add_token("VECTOR", buffer);
 			else if (strcmp(buffer, "exit") == 0)
 				add_token("EXIT", buffer);
-			else if (strcmp(buffer, "puts") == 0)
-				add_token("PUTS", buffer);
+			else if (strcmp(buffer, "put") == 0)
+				add_token("PUT", buffer);
 			else if (strcmp(buffer, "getchar") == 0)
 				add_token("GETCHAR", buffer);
 			else if (strcmp(buffer, "Object") == 0 || strcmp(buffer, "object") == 0)
@@ -197,6 +202,8 @@ void tokenize(const char *code){
 				add_token("STRCMP", buffer);
 			else if (strcmp(buffer, "strlen") == 0)
 				add_token("STRLEN", buffer);
+			else if (strcmp(buffer, "strcat") == 0)
+				add_token("STRCAT", buffer);
 			else if (strcmp(buffer, "cmp") == 0)
 				add_token("CMP", buffer);
 			else if (strcmp(buffer, "strsearch") == 0)
@@ -223,8 +230,8 @@ void tokenize(const char *code){
 				add_token("FLOAT_PARAM", buffer);
 			else if (strcmp(buffer, "char") == 0)
 				add_token("CHAR_PARAM", buffer);
-			else if (strcmp(buffer, "add_code") == 0)
-				add_token("ADD_CODE", buffer);
+			else if (strcmp(buffer, "module") == 0)
+				add_token("MODULE", buffer);
 			else if (strcmp(buffer, "bool") == 0 || strcmp(buffer, "boolean") == 0)
 				add_token("BOOL_PARAM", buffer);
 			else if (strcmp(buffer, "wait") == 0 || strcmp(buffer, "empty") == 0)
@@ -249,8 +256,8 @@ void tokenize(const char *code){
 				add_token("MOVE", buffer);
 			else if (strcmp(buffer, "delch") == 0)
 				add_token("DELCH", buffer);
-			else if (strcmp(buffer, "max") == 0)
-				add_token("MAX", buffer);
+			else if (strcmp(buffer, "each") == 0)
+				add_token("EACH", buffer);
 			else if (strcmp(buffer, "min") == 0)
 				add_token("MIN", buffer);
 			else if (strcmp(buffer, "add_char") == 0)
@@ -309,8 +316,20 @@ void tokenize(const char *code){
 				add_token("SORT_ARRAY", buffer);
 			else if (strcmp(buffer, "unset") == 0)
 				add_token("UNSET", buffer);
-			else if (strcmp(buffer, "stat") == 0)
-				add_token("STAT", buffer);
+			else if (strcmp(buffer, "create_array") == 0)
+				add_token("CREATE_ARRAY", buffer);
+			else if (strcmp(buffer, "match") == 0)
+				add_token("MATCH", buffer);
+			else if (strcmp(buffer, "is_int") == 0)
+				add_token("IS_INT", buffer);
+			else if (strcmp(buffer, "is_string") == 0)
+				add_token("IS_STRING", buffer);
+			else if (strcmp(buffer, "is_char") == 0)
+				add_token("IS_CHAR", buffer);
+			else if (strcmp(buffer, "is_float") == 0)
+				add_token("IS_FLOAT", buffer);
+			else if (strcmp(buffer, "is_bool") == 0)
+				add_token("IS_BOOL", buffer);
 			else
 				add_token("IDENTIFIER", buffer);
 			buffer_pos = 0;
@@ -325,6 +344,22 @@ void tokenize(const char *code){
 		}
 		else if (code[i] == '?'){
 			add_token("INTERROGATION", buffer);
+			buffer_pos = 0;
+		}/*
+		else if (code[i] == '('){
+			add_token("L_PAREN", buffer);
+			buffer_pos = 0;
+		}
+		else if (code[i] == ')'){
+			add_token("R_PAREN", buffer);
+			buffer_pos = 0;
+		}*/
+		else if (code[i] == '('){
+			add_token("L_PAREN", buffer);
+			buffer_pos = 0;
+		}
+		else if (code[i] == ')'){
+			add_token("R_PAREN", buffer);
 			buffer_pos = 0;
 		}
 		else if (code[i] == '"'){
@@ -368,7 +403,7 @@ void tokenize(const char *code){
 				buffer[2] = '\0';
 				i++;
 			}
-			add_token(code[i] == '(' || code[i] == ')' ? "PAREN" : code[i] == '[' || code[i] == ']' ? "BRACKET" : code[i] == '{' || code[i] == '}' ? "BRACE" : code[i] == ',' ? "COMMA" : code[i] == ':' ? "COLON" : code[i] == '.' ? "DOT" : "OPERATOR", buffer);
+			add_token(code[i] == '{' || code[i] == '}' ? "KEY" : code[i] == '[' || code[i] == ']' ? "BRACKET" : code[i] == '{' || code[i] == '}' ? "BRACE" : code[i] == ',' ? "COMMA" : code[i] == ':' ? "COLON" : code[i] == '.' ? "DOT" : "OPERATOR", buffer);
 		}
 		else if (code[i] == ' ' || code[i] == '\t' || code[i] == '\n'){}
 		else{
@@ -385,3 +420,4 @@ void removeQuotes(const char *source, char *dest){
 	}
 	*dest = '\0';
 }
+

@@ -1,18 +1,20 @@
 #include "../include/object.h"
+#include "../include/error.h"
+#include "../include/function.h"
 
-Struct* get_struct(const char* name) {
-    for (int i = 0; i < struct_count; i++) {
-        if (strcmp(structs[i].name, name) == 0) {
-            return &structs[i];
+Object * get_object(const char* name) {
+    for (int i = 0; i < object_count; i++) {
+        if (strcmp(objects[i].name, name) == 0) {
+            return &objects[i];
         }
     }
     return NULL;
 }
 
-void define_struct() {
-    if (struct_count >= MAX_STRUCTS)
+void define_object() {
+    if (object_count >= MAX_OBJECTS)
         show_errors ("Too many objects",ERROR_SINTAXIS);
-    Struct* s = &structs[struct_count++];
+    Object * s = &objects[object_count++];
     if (current_token >= token_count || strcmp(tokens[current_token].type, "IDENTIFIER") != 0)
         show_errors ("Expeced object name",ERROR_SINTAXIS);
     strcpy(s->name, tokens[current_token].value);
@@ -89,3 +91,4 @@ void define_struct() {
         show_errors ("Expected 'end' at the end of object",ERROR_SINTAXIS);
     current_token++;
 }
+
