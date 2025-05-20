@@ -1,2 +1,5 @@
-pi = 3.14
-sendText(pi)
+create_array("arr", 10, int)
+row = 0
+each (row is arr) then
+   puts("Hola\n")
+end
