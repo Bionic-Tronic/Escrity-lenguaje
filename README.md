@@ -1,4 +1,5 @@
 # Interprete - Escrity
+![logotype](https://github.com/Bionic-Tronic/Escrity-lenguaje/blob/main/logo.png)
 Escrity es un proyecto de practicas en el lenguaje C, realizado en mis tiempos libre
 donde el objetivo es crear un interprete orientado a protocolos
 es decir a manejo de distintos protocolos como `http`, `ftp`, entre otros
