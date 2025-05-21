@@ -1,12 +1,10 @@
-# Interprete - Escrity
+# Escrity
 ![logotype](https://github.com/Bionic-Tronic/Escrity-lenguaje/blob/main/logo.png)
-Escrity es un proyecto de practicas en el lenguaje C, realizado en mis tiempos libre
-donde el objetivo es crear un interprete orientado a protocolos
-es decir a manejo de distintos protocolos como `http`, `ftp`, entre otros
-El cual se estara actualizando de forma no regular.
-
+Escrity es un interpreter simple que nació con la idea de un inicio ser usado para crear juegos más ahora solo es un proyecto de oseo cuyo objetivo es el de aprender y mejorar en las habilidades de programación y de crear un interprete orientado al manejo de protocolos(ya que me gusta mucho el backend) de internet como el clasico **HTTP**, **TCP**, **FTP** entre otros y tambien agregar funciones unicas e locas.
+## ¿Por que "Escrity"?
+La verdad que el nombre es se me ocurrió cuando estaba pensado mucho en la palabra "escribir" y con la intención de que más o menos haci fuera su sintaxis. Pues. . . Hay que escribir ¿no?
 ## ¿Que soporta?
-La verdad que no mucho. Por ahora solo se puede mostrar texto, resolver operaciones aritmeticas, crear variables, crear funciones y condicionales if y else. Pero aun hay mucho que mejorar esto solo acaba de comenzar.
-
-## Ejemplos
-Los ejemplos y demas usos de este interprete lo encontraras en la wiki que acabo de crear aqui en github. [Revisar](https://github.com/Bionic-Tronic/Escrity-lenguaje/wiki)
+Para ver lo que soporta este interprete(y algunas ideas locas) estoy creando una wiki aqui en github
+[Ver wiki](https://github.com/Biomic-Tronic/Escrity-lenguaje/wiki)
+## ⚠️Aviso⚠️
+Actualmente estoy solucionando muhos errores provocados por mi falta de experiencia haci como cambiando muchas cosas para que esto funcione y de momento esto es inservible y ademas de que aun faltan subir codigo en el `evaluator.c`.
